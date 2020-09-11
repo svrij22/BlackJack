@@ -1,30 +1,31 @@
 package domein;
 
-import java.io.Console;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import static domein.BlackJackLogic.gameState;
+import static domein.BlackJackLogic.setAllCardsVisible;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
         //Deck tester
+        Stack stack = new Stack(2);
+        stack.printStack();
+        stack.shuffle();
+        stack.printStack();
 
-        DeckHolder deckHolder = new DeckHolder();
-        deckHolder.generateDeck(1);
-        deckHolder.printDeck();
-        deckHolder.shuffle();
-        deckHolder.printDeck();
+        System.out.println("You got "+ stack.getCards(2, true));
+        System.out.println("You got "+ stack.getCards(2, true));
 
-        System.out.println("You got "+ deckHolder.getCards(2, true));
-        System.out.println("You got "+ deckHolder.getCards(2, true));
-
-        deckHolder.printDeck();
+        stack.printStack();
 
         //Hand tester
         Hand hand = new Hand();
         while (!hand.isBusted()){
-            hand.addCards(deckHolder, 1, true);
+            hand.addCards(stack, 1, true);
             int value = hand.getHandValue();
             System.out.println(value + " : " + hand.getCards());
         }
@@ -34,75 +35,91 @@ public class Main {
         //Game
         while (true){
 
+            //new list of players
+            ArrayList<Player> players = new ArrayList<>();
+
             //New player and dealer
-            Player player = new Player(deckHolder, 2);
-            Dealer dealer = new Dealer(deckHolder, 1);
-            dealer.getHand().addCards(deckHolder, 1, false);
+            Player player = new Player(stack, 2);
+            players.add(player);
+
+            Dealer dealer = new Dealer(stack, 1);
+            dealer.getHand().addCards(stack, 1, false);
 
             //new deck
-            deckHolder.generateDeck(1);
-            deckHolder.shuffle();
+            stack.clear();
+            stack.getStack(1);
+            stack.shuffle();
 
             //Wait for new game
-            waitForEnter("WELCOME TO BLACKJACK!");
+            Scanner userChoice = new Scanner(System.in);
+            waitForEnter("WELCOME TO BLACKJACK!", userChoice);
             boolean onMove = true;
+            boolean isFirstMove = true;
+
+            //New game state
+            BlackJackLogic.gameState state = gameState.Playing;
 
             while (onMove){
-                System.out.println("=============================DEALER=================================");
-                DeckPrinter.printDeck(dealer.getHand().getCards());
-                System.out.println("=============================PLAYER (" + player.getHand().getHandValue()+ ")=============================");
-                DeckPrinter.printDeck(player.getHand().getCards());
-                System.out.println("======================================================================");
 
+                //Get state and print game
+                state = BlackJackLogic.getGameState(state, player, dealer);
+                if (state != gameState.Playing && state != gameState.Standing){
+                    setAllCardsVisible(dealer);
+                }
+                BlackJackLogic.printGame(player, dealer);
+
+                //Get hand
                 int dealerValue = dealer.getHand().getHandValue();
                 int playerValue = player.getHand().getHandValue();
 
-                if (playerValue == 21){
-                    if (dealerValue < 21){
-                        System.out.println("BLACKJACK! You won twice your bet!");
-                        onMove = false;
-                    }else{
-                        System.out.println("PUSH! Better luck next time.");
-                        onMove = false;
-                    }
-                    break;
-                }
-
-                if (player.isBust()) {
-                    System.out.println("BUST! Better luck next time.");
-                    onMove = false;
-                    break;
-                }else{
+                if (state == gameState.Playing){
                     System.out.print("ACTION: ");
-                    System.out.println("[HIT]");
+                    System.out.print("[HIT : h]");
+                    System.out.print("[STAND : s]");
+                    if (isFirstMove) System.out.print("[DOUBLE : d]");
+                    System.out.println();
 
-//                    if (player.hasPair()){
-//                        System.out.println("[SPLIT]");
-//                    }
-
-                    Scanner userChoice = new Scanner(System.in);
                     boolean userChosen = false;
-
                     while (!userChosen){
                         String choice = userChoice.nextLine();
                         switch (choice){
-                            case "HIT":
+                            case "h":
                                 System.out.println("Player chose hit!");
-                                player.getHand().addCards(deckHolder, 1, true);
+                                player.getHand().addCards(stack, 1, true);
                                 userChosen = true;
                                 break;
+                            case "s":
+                                System.out.println("Player chose stand!");
+                                state = gameState.Standing;
+                                userChosen = true;
+                                break;
+                            case "d":
+                                if (isFirstMove){
+                                    System.out.println("Player chose double down!");
+                                    player.getHand().addCards(stack, 1, true);
+                                    state = gameState.Standing;
+                                    userChosen = true;
+                                    break;
+                                }
                         }
                     }
-                    userChoice.close();
-                    userChoice.remove();
+                } else if (state == gameState.Standing){
+                    if (dealerValue < 16) {
+                        dealer.getHand().addCards(stack, 1, true);
+                    }else{
+                        state = gameState.BothStanding;
+                    }
+                } else{
+                    onMove = false;
                 }
+
+                isFirstMove = false;
             }
         }
     }
 
-    public static void waitForEnter(String message) {
+    public static void waitForEnter(String message, Scanner scanner) {
         System.out.println(message);
-        Scanner scanner = new Scanner(System.in);
         while (true){
             if (scanner.next() != null) break;
         }

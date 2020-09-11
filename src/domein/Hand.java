@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Hand {
     private ArrayList<Card> holdingCards = new ArrayList<>();
 
-    public void addCards(DeckHolder dh, int cardAmt, boolean isVisible){
-        holdingCards.addAll(dh.getCards(cardAmt, isVisible));
+    public void addCards(Stack stack, int cardAmt, boolean isVisible){
+        holdingCards.addAll(stack.getCards(cardAmt, isVisible));
     }
 
     public void setVisible(int pos){

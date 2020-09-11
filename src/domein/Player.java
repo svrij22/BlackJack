@@ -3,8 +3,27 @@ package domein;
 public class Player {
     private Hand hand = new Hand();
 
-    public Player(DeckHolder deckHolder, int cardAmount) {
-        hand.addCards(deckHolder, cardAmount, true);
+    private boolean isFirstmove;
+    private boolean hasChosen;
+
+    public boolean isFirstmove() {
+        return isFirstmove;
+    }
+
+    public void setFirstmove(boolean firstmove) {
+        isFirstmove = firstmove;
+    }
+
+    public boolean isHasChosen() {
+        return hasChosen;
+    }
+
+    public void setHasChosen(boolean hasChosen) {
+        this.hasChosen = hasChosen;
+    }
+
+    public Player(Stack stack, int cardAmount) {
+        hand.addCards(stack, cardAmount, true);
     }
 
     public boolean hasPair() {
@@ -13,8 +32,8 @@ public class Player {
         return card0.equalsValue(card1);
     }
 
-    public void hit(DeckHolder deckHolder){
-        hand.addCards(deckHolder, 1, true);
+    public void hit(Stack stack){
+        hand.addCards(stack, 1, true);
     }
 
     public Hand getHand() {
