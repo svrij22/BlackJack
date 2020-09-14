@@ -10,23 +10,34 @@ public class Card {
     }
 
     public enum Type{
-        Number,
-        Jack,
-        Queen,
-        King,
-        Ace
+        Number(0),
+        Jack(10),
+        Queen(10),
+        King(10),
+        Ace(11);
+
+        private final int value;
+
+        Type(int i) {
+            this.value = i;
+        }
     }
 
     private final Type cardType;
     private final Suit cardSuit;
     private final int cardValue;
-    private boolean isVisible;
+    private boolean isVisible = false;
 
-    public Card(Type cardType, Suit cardSuit, int cardValue, boolean isVisible) {
+    public Card(Type cardType, Suit cardSuit) {
         this.cardType = cardType;
         this.cardSuit = cardSuit;
+        this.cardValue = cardType.value;
+    }
+
+    public Card(int cardValue, Suit cardSuit) {
+        this.cardType = Type.Number;
+        this.cardSuit = cardSuit;
         this.cardValue = cardValue;
-        this.isVisible = isVisible;
     }
 
     public boolean isVisible() {
@@ -47,6 +58,10 @@ public class Card {
 
     public int getCardValue() {
         return cardValue;
+    }
+
+    public boolean isAce() {
+        return (this.cardType == Type.Ace);
     }
 
     @Override

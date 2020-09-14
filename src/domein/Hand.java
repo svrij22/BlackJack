@@ -21,9 +21,8 @@ public class Hand {
         int totalValue = 0;
         for (Card c : holdingCards){
             totalValue += c.getCardValue();
-
             //Greater than 21 and its an ace? Bring that shit down
-            if (totalValue > 21 && c.getCardType().equals(Card.Type.Ace)) totalValue -= 10;
+            if (totalValue > 21 && c.isAce()) totalValue -= 10;
         }
         return totalValue;
     }

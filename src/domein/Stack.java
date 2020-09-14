@@ -18,6 +18,7 @@ public class Stack {
     public void getStack(int stackAmt){
         cardStack.addAll(Deck.generateDeck(stackAmt));
     }
+
     public void shuffle(){
         Collections.shuffle(this.cardStack);
     }

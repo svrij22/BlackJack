@@ -10,17 +10,15 @@ public class Deck {
         ArrayList<Card> deck = new ArrayList<>();
         IntStream.range(0, deckAmount).forEachOrdered(n -> {
             for (Card.Suit suit : Card.Suit.values()){
-
                 // 2 - 10
-                IntStream.range(2, 11).forEachOrdered(n2 -> {
-                    deck.add(new Card(Card.Type.Number, suit, n2, false));
+                IntStream.range(2, 11).forEachOrdered(number -> {
+                    deck.add(new Card(number, suit));
                 });
-
                 // J Q K A
-                deck.add(new Card(Card.Type.Jack, suit, 10, false));
-                deck.add(new Card(Card.Type.Queen, suit, 10, false));
-                deck.add(new Card(Card.Type.King, suit, 10, false));
-                deck.add(new Card(Card.Type.Ace, suit, 11, false));
+                deck.add(new Card(Card.Type.Jack, suit));
+                deck.add(new Card(Card.Type.Queen, suit));
+                deck.add(new Card(Card.Type.King, suit));
+                deck.add(new Card(Card.Type.Ace, suit));
             }
         });
         return deck;
